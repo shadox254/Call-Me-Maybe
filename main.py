@@ -13,12 +13,13 @@
 #  File: main.py                                                              #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:52:43 by rruiz                                      #
-#  Updated: 2026/03/24 09:27:52 by rruiz                                      #
+#  Updated: 2026/03/24 16:54:36 by rruiz                                      #
 # *************************************************************************** #
 
 import argparse
 import sys
 from src.load_from_json import load_functions, load_prompts
+from llm_sdk.llm_sdk import Small_LLM_Model
 
 def main():
     try:
@@ -50,4 +51,10 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    # sys.exit(main())
+    test = Small_LLM_Model()
+    test2 = test.encode("Je suis une phrase de texte d'une longueur correcte")
+    for t in test2:
+        for e in t:
+            print(f"{e}: {test.decode(e)}")
+    # print(f"test2: {test2}\n\ntest: {test.decode(test2)}")
