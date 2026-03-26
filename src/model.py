@@ -13,7 +13,7 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/26 17:13:12 by rruiz                                      #
+#  Updated: 2026/03/26 18:12:18 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
@@ -56,8 +56,36 @@ class CallMeMaybe(Small_LLM_Model):
 
         for prompt in prompts_list:
             to_write = function_txt + f'\nTask:\n{{\n  "prompt": "{prompt.prompt}",\n  "name": "'
+            input_ids = []
+            function_name = ""
+            while (state != States.END):
+                input_ids = []
+                for a in self.encode(to_write):
+                        input_ids.append(b for b in a)
+                logits = self.get_logits_from_input_ids(input_ids)
+                for token, id in vocab.items():
+                    is_valid = False
+                    if ((function_name + token) in prefixes):
+                        is_valid = True
+                    else:
+                        if ((function_name + token) == (function.name for function in functions_list)):
+                            is_valid = True
+                            break
+                    if is_valid is False:
+                        logits[id] = float('-inf')
+                best_id = logits.index(max(logits))
+                best_token = rev_vocab[best_id]
 
-            encode_prompt = self.encode(to_write)
+                function_name += best_token
+                input_ids.append(best_id)
+
+                for function in functions_list:
+                    if function_name == function.name:
+                        state = States.END_NAME
+                        break
+
+            elif state == States.END_NAME:
+                break
 
     def load_vocab(self, path: str):
         try:
