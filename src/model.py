@@ -13,13 +13,13 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/26 09:27:43 by rruiz                                      #
+#  Updated: 2026/03/26 17:13:12 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
 from llm_sdk.llm_sdk import Small_LLM_Model
 import json
-from numpy import inf
+from enum import Enum
 
 class FunctionModel(BaseModel):
     name: str
@@ -30,20 +30,45 @@ class FunctionModel(BaseModel):
 class PromptModel(BaseModel):
     prompt: str
 
+class States(Enum):
+    START = "start"
+    NAME = "name"
+    END_NAME = "end_name"
+    PARAMETERS = "parameters"
+    END = "end"
+
 class CallMeMaybe(Small_LLM_Model):
     def process(self, functions_list: list[FunctionModel], prompts_list: list[PromptModel]):
+        state = States.START
         function_txt = "Available functions:\n"
         for function in functions_list:
             params_str = json.dumps(function.parameters)
             function_txt += f'- {{"name": "{function.name}", "description": "{function.description}", "parameters": {params_str}}}\n'
 
-        logits = set()
+        prefixes = set()
         for function in functions_list:
             for i in range(1, len(function.name) + 1):
-                logits.add(function.name[:i])
+                prefixes.add(function.name[:i])
+
+        vocab_path = self.get_path_to_vocab_file()
+        vocab = self.load_vocab(vocab_path)
+        rev_vocab = self.reverse_vocab(vocab)
 
         for prompt in prompts_list:
             to_write = function_txt + f'\nTask:\n{{\n  "prompt": "{prompt.prompt}",\n  "name": "'
 
-            # print(to_write)
             encode_prompt = self.encode(to_write)
+
+    def load_vocab(self, path: str):
+        try:
+            with open(path, "r") as f:
+                vocab = json.load(f)
+            return vocab
+        except FileNotFoundError:
+            raise FileNotFoundError("Error, vocab file not found")
+
+    def reverse_vocab(self, vocab: dict):
+        rev_vocab = {}
+        for key, value in vocab.items():
+            rev_vocab[value] = key
+        return rev_vocab
