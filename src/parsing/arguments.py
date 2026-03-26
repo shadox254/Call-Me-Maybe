@@ -10,31 +10,33 @@
 #                                  `-._,_)' // / ``--...____..-'              #
 #                                                                             #
 # *************************************************************************** #
-#  File: load_from_json.py                                                    #
+#  File: arguments.py                                                         #
 #  By: rruiz <rruiz@student.42.fr>                                            #
-#  Created: 2026/03/23 16:41:34 by rruiz                                      #
-#  Updated: 2026/03/24 09:20:41 by rruiz                                      #
+#  Created: 2026/03/25 10:05:54 by rruiz                                      #
+#  Updated: 2026/03/25 10:33:28 by rruiz                                      #
 # *************************************************************************** #
 
-import json
-from .model import FunctionModel, PromptModel
+from argparse import Namespace, ArgumentParser 
 
-def load_functions(path: str) -> list:
-    try:
-        with open(path, "r") as f:
-            data = json.load(f)
-            # for arg in data:
-            funcs_list = [FunctionModel(**arg) for arg in data]
-        return funcs_list
-    except FileNotFoundError:
-        raise FileNotFoundError(f"File not found: {path}")
-
-
-def load_prompts(path: str) -> list:
-    try:
-        with open(path, "r") as f:
-            data = json.load(f)
-            prompts_list = [PromptModel(**arg) for arg in data]
-        return prompts_list
-    except FileNotFoundError:
-        raise FileNotFoundError(f"File not found: {path}")
+def parse_arguments() -> Namespace:
+    args = ArgumentParser()
+    args.add_argument(
+        "--input", "-i",
+        help="Path to the file containing the prompts",
+        default="data/input/function_calling_tests.json",
+        type=str
+        )
+    args.add_argument(
+        "--functions_definition", "-d",
+        help="Path to the file in which functions are defined",
+        default="data/input/functions_definition.json",
+        type=str
+        )
+    args.add_argument(
+        "--output", "-o",
+        help="Path to the file where output are saved",
+        default="data/output/function_calling_results.json",
+        type=str
+        )
+    parsed_args = args.parse_args()
+    return parsed_args

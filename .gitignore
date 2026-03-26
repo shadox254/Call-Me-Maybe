@@ -6,10 +6,16 @@ dist/
 wheels/
 *.egg-info
 .python-version
+hf_cache/
 
 # Virtual environments
 .venv
 
-# Other
+# Test
 test.py
 test.json
+test.txt
+output/
+
+# Other
+note.txt

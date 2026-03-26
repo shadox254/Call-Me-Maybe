@@ -10,17 +10,21 @@
 #                                  `-._,_)' // / ``--...____..-'              #
 #                                                                             #
 # *************************************************************************** #
-#  File: __init__.py                                                          #
+#  File: prompts.py                                                           #
 #  By: rruiz <rruiz@student.42.fr>                                            #
-#  Created: 2026/03/23 16:42:14 by rruiz                                      #
-#  Updated: 2026/03/26 08:07:54 by rruiz                                      #
+#  Created: 2026/03/25 10:17:49 by rruiz                                      #
+#  Updated: 2026/03/25 16:32:21 by rruiz                                      #
 # *************************************************************************** #
 
-from src.parsing.arguments import parse_arguments
-from src.parsing.functions import load_functions
-from src.parsing.prompts import load_prompts
-from .model import FunctionModel
-from .model import CallMeMaybe
+from json import load
+from ..model import PromptModel
 
-all = [parse_arguments, load_functions, load_prompts, FunctionModel,
-       CallMeMaybe]
+
+def load_prompts(path: str) -> list:
+    try:
+        with open(path, "r") as f:
+            data = load(f)
+            prompts_list = [PromptModel(**arg) for arg in data]
+        return prompts_list
+    except FileNotFoundError:
+        raise FileNotFoundError(f"File not found: {path}")
