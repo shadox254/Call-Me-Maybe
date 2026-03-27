@@ -13,7 +13,7 @@
 #  File: __main__.py                                                          #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:52:43 by rruiz                                      #
-#  Updated: 2026/03/27 07:55:24 by rruiz                                      #
+#  Updated: 2026/03/27 12:00:48 by rruiz                                      #
 # *************************************************************************** #
 
 import sys

@@ -13,7 +13,7 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/27 08:55:58 by rruiz                                      #
+#  Updated: 2026/03/27 15:23:42 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
@@ -37,6 +37,7 @@ class States(Enum):
     NAME = "name"
     END_NAME = "end_name"
     PARAMETERS = "parameters"
+    PARAMETERS_VALUE = "parameters value"
     END = "end"
 
 class CallMeMaybe(Small_LLM_Model):
@@ -99,10 +100,28 @@ class CallMeMaybe(Small_LLM_Model):
                     for a in self.encode(between_name_params):
                         for b in a:
                             input_ids.append(b)
+                    params_to_process = list(function.parameters.items())
                     state = States.PARAMETERS
 
                 elif state == States.PARAMETERS:
+                    if len(params_to_process) == 0:
+                        last_bracket = self.encode("}")
+                        for a in last_bracket:
+                            for b in a:
+                                input_ids.append(b)
+                        state = States.END
+                    else:
+                        key, value = params_to_process[0]
+                        print(f"key: {key}, value: {value}, len: {len(params_to_process)}")
+                        key, value = params_to_process.pop(0)
+                        for a in self.encode(f'"{key}": '):
+                            for b in a:
+                                input_ids.append(b)
+                        state = States.PARAMETERS_VALUE
+
+                elif state == States.PARAMETERS_VALUE:
                     break
+
 
             current_result = {
                 "prompt": prompt.prompt,
