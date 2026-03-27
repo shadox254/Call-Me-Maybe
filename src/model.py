@@ -13,13 +13,15 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/26 18:12:18 by rruiz                                      #
+#  Updated: 2026/03/27 08:55:58 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
 from llm_sdk.llm_sdk import Small_LLM_Model
 import json
 from enum import Enum
+from argparse import Namespace
+from pathlib import Path
 
 class FunctionModel(BaseModel):
     name: str
@@ -38,8 +40,9 @@ class States(Enum):
     END = "end"
 
 class CallMeMaybe(Small_LLM_Model):
-    def process(self, functions_list: list[FunctionModel], prompts_list: list[PromptModel]):
+    def process(self, functions_list: list[FunctionModel], prompts_list: list[PromptModel], args: Namespace):
         state = States.START
+        results = []
         function_txt = "Available functions:\n"
         for function in functions_list:
             params_str = json.dumps(function.parameters)
@@ -56,36 +59,61 @@ class CallMeMaybe(Small_LLM_Model):
 
         for prompt in prompts_list:
             to_write = function_txt + f'\nTask:\n{{\n  "prompt": "{prompt.prompt}",\n  "name": "'
-            input_ids = []
+            input_ids = [] 
+            for a in self.encode(to_write):
+                for b in a:
+                    input_ids.append(b)
+
             function_name = ""
+            state = States.NAME
             while (state != States.END):
-                input_ids = []
-                for a in self.encode(to_write):
-                        input_ids.append(b for b in a)
                 logits = self.get_logits_from_input_ids(input_ids)
-                for token, id in vocab.items():
-                    is_valid = False
-                    if ((function_name + token) in prefixes):
-                        is_valid = True
-                    else:
-                        if ((function_name + token) == (function.name for function in functions_list)):
+                if state == States.NAME:
+                    for token, id in vocab.items():
+                        is_valid = False
+
+                        if ((function_name + token) in prefixes):
                             is_valid = True
+
+                        else:
+                            if ((function_name + token) == (function.name for function in functions_list)):
+                                is_valid = True
+                                break
+
+                        if is_valid is False:
+                            logits[id] = float('-inf')
+
+                    best_token_id = logits.index(max(logits))
+                    best_token = rev_vocab[best_token_id]
+
+                    function_name += best_token
+                    input_ids.append(best_token_id)
+
+                    for function in functions_list:
+                        if function_name == function.name:
+                            state = States.END_NAME
                             break
-                    if is_valid is False:
-                        logits[id] = float('-inf')
-                best_id = logits.index(max(logits))
-                best_token = rev_vocab[best_id]
 
-                function_name += best_token
-                input_ids.append(best_id)
+                elif state == States.END_NAME:
+                    between_name_params = '", "parameters": {'
+                    for a in self.encode(between_name_params):
+                        for b in a:
+                            input_ids.append(b)
+                    state = States.PARAMETERS
 
-                for function in functions_list:
-                    if function_name == function.name:
-                        state = States.END_NAME
-                        break
+                elif state == States.PARAMETERS:
+                    break
 
-            elif state == States.END_NAME:
-                break
+            current_result = {
+                "prompt": prompt.prompt,
+                "name": function_name,
+                "parameters": 0
+            }
+            results.append(current_result)
+
+            Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+            with open(args.output, "w") as f:
+                json.dump(results, f, indent=2)
 
     def load_vocab(self, path: str):
         try:

@@ -13,7 +13,7 @@
 #  File: __main__.py                                                          #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:52:43 by rruiz                                      #
-#  Updated: 2026/03/26 08:34:41 by rruiz                                      #
+#  Updated: 2026/03/27 07:55:24 by rruiz                                      #
 # *************************************************************************** #
 
 import sys
@@ -38,7 +38,7 @@ def main():
                 sys.exit(2)
 
             test = CallMeMaybe()
-            test.process(functions_list, prompts_list)
+            test.process(functions_list, prompts_list, args)
 
             # with open(args.output, "w") as f:
             #     for prompt in prompts_list:
