@@ -13,7 +13,7 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/27 15:23:42 by rruiz                                      #
+#  Updated: 2026/03/28 20:03:39 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
@@ -67,6 +67,7 @@ class CallMeMaybe(Small_LLM_Model):
 
             function_name = ""
             state = States.NAME
+            saved_params = {}
             while (state != States.END):
                 logits = self.get_logits_from_input_ids(input_ids)
                 if state == States.NAME:
@@ -111,22 +112,80 @@ class CallMeMaybe(Small_LLM_Model):
                                 input_ids.append(b)
                         state = States.END
                     else:
-                        key, value = params_to_process[0]
-                        print(f"key: {key}, value: {value}, len: {len(params_to_process)}")
                         key, value = params_to_process.pop(0)
                         for a in self.encode(f'"{key}": '):
                             for b in a:
                                 input_ids.append(b)
+                        param_tokens = []
                         state = States.PARAMETERS_VALUE
 
                 elif state == States.PARAMETERS_VALUE:
-                    break
+                    match value["type"]:
+                        case "number": # float
+                            state = States.PARAMETERS
+
+                        case "string":
+                            if len(param_tokens) == 0:
+                                for a in self.encode('"'):
+                                    for b in a:
+                                        input_ids.append(b)
+
+                            logits = self.get_logits_from_input_ids(input_ids)
+                            best_id = logits.index(max(logits))
+                            best_token = rev_vocab[best_id]
+
+                            param_tokens.append(best_token)
+                            current_str = "".join(param_tokens)
+
+                            end_index = -1
+                            escaped = False
+                            
+                            for i, char in enumerate(current_str):
+                                if char == '\\' and not escaped:
+                                    escaped = True
+                                elif char == '"' and not escaped:
+                                    end_index = i
+                                    break
+                                else:
+                                    escaped = False
+
+                            if end_index != -1:
+                                final_value = current_str[:end_index]
+                                saved_params[key] = final_value
+                                
+                                valid_part = current_str[len(current_str) - len(best_token):end_index + 1]
+                                for a in self.encode(valid_part):
+                                    for b in a:
+                                        input_ids.append(b)
+                                
+                                param_tokens.clear()
+                                
+                                if len(params_to_process) > 0:
+                                    for a in self.encode(', '):
+                                        for b in a:
+                                            input_ids.append(b)
+                                    state = States.PARAMETERS
+                                else:
+                                    for a in self.encode('}'):
+                                        for b in a:
+                                            input_ids.append(b)
+                                    state = States.END
+                            else:
+                                input_ids.append(best_id)
+
+
+                        case "integer": # int
+                            state = States.PARAMETERS
+
+
+                        case _:
+                            raise TypeError("Error, unknow type")
 
 
             current_result = {
                 "prompt": prompt.prompt,
                 "name": function_name,
-                "parameters": 0
+                "parameters": saved_params
             }
             results.append(current_result)
 

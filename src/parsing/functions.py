@@ -13,7 +13,7 @@
 #  File: functions.py                                                         #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:16:31 by rruiz                                      #
-#  Updated: 2026/03/26 08:10:44 by rruiz                                      #
+#  Updated: 2026/03/27 17:20:09 by rruiz                                      #
 # *************************************************************************** #
 
 from json import load
