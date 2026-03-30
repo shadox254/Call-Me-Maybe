@@ -13,7 +13,7 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/30 04:22:32 by rruiz                                      #
+#  Updated: 2026/03/30 07:23:23 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
@@ -23,14 +23,17 @@ from enum import Enum
 from argparse import Namespace
 from pathlib import Path
 
+
 class FunctionModel(BaseModel):
     name: str
     description: str
     parameters: dict[str, dict[str, str]]
     returns: dict[str, str]
 
+
 class PromptModel(BaseModel):
     prompt: str
+
 
 class States(Enum):
     START = "start"
@@ -40,14 +43,17 @@ class States(Enum):
     PARAMETERS_VALUE = "parameters value"
     END = "end"
 
+
 class CallMeMaybe(Small_LLM_Model):
-    def process(self, functions_list: list[FunctionModel], prompts_list: list[PromptModel], args: Namespace):
+    def process(self, functions_list: list[FunctionModel],
+                prompts_list: list[PromptModel], args: Namespace) -> None:
         state = States.START
         results = []
         function_txt = "Available functions:\n"
         for function in functions_list:
             params_str = json.dumps(function.parameters)
-            function_txt += f'- {{"name": "{function.name}", "description": "{function.description}", "parameters": {params_str}}}\n'
+            function_txt += f'- {{"name": "{function.name}",\
+"description": "{function.description}", "parameters": {params_str}}}\n'
 
         prefixes = set()
         for function in functions_list:
@@ -59,8 +65,9 @@ class CallMeMaybe(Small_LLM_Model):
         rev_vocab = self.reverse_vocab(vocab)
 
         for prompt in prompts_list:
-            to_write = function_txt + f'\nTask:\n{{\n  "prompt": "{prompt.prompt}",\n  "name": "'
-            input_ids = [] 
+            to_write = function_txt + (f'\nTask:\n{{\n  "prompt":\
+"{prompt.prompt}",\n  "name": "')
+            input_ids = []
             for a in self.encode(to_write):
                 for b in a:
                     input_ids.append(b)
@@ -78,7 +85,9 @@ class CallMeMaybe(Small_LLM_Model):
                             is_valid = True
 
                         else:
-                            if ((function_name + token) == (function.name for function in functions_list)):
+                            if ((function_name
+                                 + token) == (function.name
+                                              for function in functions_list)):
                                 is_valid = True
                                 break
 
@@ -121,7 +130,7 @@ class CallMeMaybe(Small_LLM_Model):
 
                 elif state == States.PARAMETERS_VALUE:
                     match value["type"]:
-                        case "number": # float
+                        case "number":  # float
                             logits = self.get_logits_from_input_ids(input_ids)
                             curr_str = "".join(param_tokens)
 
@@ -129,10 +138,12 @@ class CallMeMaybe(Small_LLM_Model):
                                 clean_token = token.strip()
 
                                 if clean_token in [",", "}"]:
-                                    if len(curr_str) == 0 or curr_str in ["-", "."]:
+                                    if (len(curr_str) == 0 or
+                                            curr_str in ["-", "."]):
                                         logits[id] = float('-inf')
                                     continue
-                                if not all(c in "0123456789-." for c in clean_token):
+                                if (not all(c in "0123456789-."
+                                            for c in clean_token)):
                                     if clean_token != "":
                                         logits[id] = float('-inf')
                                     continue
@@ -163,7 +174,6 @@ class CallMeMaybe(Small_LLM_Model):
                                 input_ids.append(best_id)
                                 param_tokens.append(clean_best)
 
-
                         case "string":
                             if len(param_tokens) == 0:
                                 for a in self.encode('"'):
@@ -179,7 +189,7 @@ class CallMeMaybe(Small_LLM_Model):
 
                             end_index = -1
                             escaped = False
-                            
+
                             for i, char in enumerate(current_str):
                                 if char == '\\' and not escaped:
                                     escaped = True
@@ -190,16 +200,20 @@ class CallMeMaybe(Small_LLM_Model):
                                     escaped = False
 
                             if end_index != -1:
-                                final_value = current_str[:end_index].replace('\u0120', ' ')
+                                final_value = (current_str[:end_index]
+                                               .replace('\u0120', ' '))
                                 saved_params[key] = final_value
-                                
-                                valid_part = current_str[len(current_str) - len(best_token):end_index + 1]
+
+                                valid_part = (
+                                    current_str[len(current_str)
+                                                - len(best_token):
+                                                end_index + 1])
                                 for a in self.encode(valid_part):
                                     for b in a:
                                         input_ids.append(b)
-                                
+
                                 param_tokens.clear()
-                                
+
                                 if len(params_to_process) > 0:
                                     for a in self.encode(', '):
                                         for b in a:
@@ -213,7 +227,6 @@ class CallMeMaybe(Small_LLM_Model):
                             else:
                                 input_ids.append(best_id)
 
-
                         case "integer":
                             logits = self.get_logits_from_input_ids(input_ids)
                             curr_str = "".join(param_tokens)
@@ -225,8 +238,9 @@ class CallMeMaybe(Small_LLM_Model):
                                     if len(curr_str) == 0 or curr_str == "-":
                                         logits[id] = float('-inf')
                                     continue
-                                
-                                if not all(c in "0123456789-" for c in clean_token):
+
+                                if not all(c in "0123456789-"
+                                           for c in clean_token):
                                     if clean_token != "":
                                         logits[id] = float('-inf')
                                     continue
@@ -234,7 +248,9 @@ class CallMeMaybe(Small_LLM_Model):
                                 if "-" in clean_token and len(curr_str) != 0:
                                     logits[id] = float('-inf')
 
-                                if curr_str in ["0", "-0"] and any(c in "0123456789" for c in clean_token):
+                                if (curr_str in ["0", "-0"] and any
+                                        (c in "0123456789"
+                                         for c in clean_token)):
                                     logits[id] = float('-inf')
 
                             best_id = logits.index(max(logits))
@@ -257,10 +273,8 @@ class CallMeMaybe(Small_LLM_Model):
                                 input_ids.append(best_id)
                                 param_tokens.append(clean_best)
 
-
                         case _:
                             raise TypeError("Error, unknow type")
-
 
             current_result = {
                 "prompt": prompt.prompt,

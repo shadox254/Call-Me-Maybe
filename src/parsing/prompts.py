@@ -13,7 +13,7 @@
 #  File: prompts.py                                                           #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:17:49 by rruiz                                      #
-#  Updated: 2026/03/25 16:32:21 by rruiz                                      #
+#  Updated: 2026/03/30 07:06:41 by rruiz                                      #
 # *************************************************************************** #
 
 from json import load

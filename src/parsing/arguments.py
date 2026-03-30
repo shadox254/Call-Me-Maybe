@@ -13,10 +13,11 @@
 #  File: arguments.py                                                         #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:05:54 by rruiz                                      #
-#  Updated: 2026/03/27 11:55:09 by rruiz                                      #
+#  Updated: 2026/03/30 07:06:22 by rruiz                                      #
 # *************************************************************************** #
 
-from argparse import Namespace, ArgumentParser 
+from argparse import Namespace, ArgumentParser
+
 
 def parse_arguments() -> Namespace:
     args = ArgumentParser()
