@@ -13,10 +13,11 @@
 #  File: Makefile                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 08:55:56 by rruiz                                      #
-#  Updated: 2026/03/25 09:41:30 by rruiz                                      #
+#  Updated: 2026/03/30 04:38:31 by rruiz                                      #
 # *************************************************************************** #
 
-MYPY_FLAGS= --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+MYPY_FLAGS	= --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs --follow-imports=skip
+SRC			= src
 
 install:
 	@echo "Beautiful message"

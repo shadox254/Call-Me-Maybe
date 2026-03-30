@@ -13,7 +13,7 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/30 03:08:50 by rruiz                                      #
+#  Updated: 2026/03/30 04:22:32 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
@@ -122,47 +122,47 @@ class CallMeMaybe(Small_LLM_Model):
                 elif state == States.PARAMETERS_VALUE:
                     match value["type"]:
                         case "number": # float
-                            generate_number = ""
-                            has_a_point_decimal = False
-                            end_tokens = [",", "}"]
+                            logits = self.get_logits_from_input_ids(input_ids)
+                            curr_str = "".join(param_tokens)
 
-                            while True:
-                                logits = self.get_logits_from_input_ids(input_ids)
-                                for token, id in vocab.items():
-                                    if token in end_tokens:
-                                        if len(generate_number) == 0:
-                                            logits[id] = float('-inf')
-                                        continue
+                            for token, id in vocab.items():
+                                clean_token = token.strip()
 
-                                    elif not all(c in "-0123456789." for c in token):
+                                if clean_token in [",", "}"]:
+                                    if len(curr_str) == 0 or curr_str in ["-", "."]:
                                         logits[id] = float('-inf')
-
-                                    elif "-" in token and len(generate_number) > 0:
+                                    continue
+                                if not all(c in "0123456789-." for c in clean_token):
+                                    if clean_token != "":
                                         logits[id] = float('-inf')
+                                    continue
 
-                                    elif "." in token:
-                                        if has_a_point_decimal is True or len(generate_number) == 0:
-                                            logits[id] = float('-inf')
+                                if "-" in clean_token and len(curr_str) != 0:
+                                    logits[id] = float('-inf')
 
-                                best_id = logits.index(max(logits))
-                                best_token = rev_vocab[best_id]
+                                if "." in clean_token and "." in curr_str:
+                                    logits[id] = float('-inf')
 
-                                if best_token == "," or best_token == "}":
-                                    saved_params[key] = float(generate_number)
-                                    input_ids.append(best_id)
+                            best_id = logits.index(max(logits))
+                            best_token = rev_vocab[best_id]
+                            clean_best = best_token.strip()
 
-                                    if best_token == ",":
-                                        for a in self.encode(" "):
-                                            for b in a:
-                                                input_ids.append(b)
-                                        state = States.PARAMETERS
-                                    else:
-                                        state = States.END
-                                    break
+                            if clean_best in [",", "}"]:
+                                saved_params[key] = float(curr_str)
+
+                                for a in self.encode(best_token):
+                                    for b in a:
+                                        input_ids.append(b)
+
+                                if clean_best == ",":
+                                    state = States.PARAMETERS
+                                else:
+                                    state = States.END
+
+                            else:
                                 input_ids.append(best_id)
-                                generate_number += best_token
-                                if "." in best_token:
-                                    has_a_point_decimal = True
+                                param_tokens.append(clean_best)
+
 
                         case "string":
                             if len(param_tokens) == 0:
@@ -190,7 +190,7 @@ class CallMeMaybe(Small_LLM_Model):
                                     escaped = False
 
                             if end_index != -1:
-                                final_value = current_str[:end_index]
+                                final_value = current_str[:end_index].replace('\u0120', ' ')
                                 saved_params[key] = final_value
                                 
                                 valid_part = current_str[len(current_str) - len(best_token):end_index + 1]
@@ -214,8 +214,48 @@ class CallMeMaybe(Small_LLM_Model):
                                 input_ids.append(best_id)
 
 
-                        case "integer": # int
-                            state = States.PARAMETERS
+                        case "integer":
+                            logits = self.get_logits_from_input_ids(input_ids)
+                            curr_str = "".join(param_tokens)
+
+                            for token, id in vocab.items():
+                                clean_token = token.strip()
+
+                                if clean_token in [",", "}"]:
+                                    if len(curr_str) == 0 or curr_str == "-":
+                                        logits[id] = float('-inf')
+                                    continue
+                                
+                                if not all(c in "0123456789-" for c in clean_token):
+                                    if clean_token != "":
+                                        logits[id] = float('-inf')
+                                    continue
+
+                                if "-" in clean_token and len(curr_str) != 0:
+                                    logits[id] = float('-inf')
+
+                                if curr_str in ["0", "-0"] and any(c in "0123456789" for c in clean_token):
+                                    logits[id] = float('-inf')
+
+                            best_id = logits.index(max(logits))
+                            best_token = rev_vocab[best_id]
+                            clean_best = best_token.strip()
+
+                            if clean_best in [",", "}"]:
+                                saved_params[key] = int(curr_str)
+
+                                for a in self.encode(best_token):
+                                    for b in a:
+                                        input_ids.append(b)
+
+                                if clean_best == ",":
+                                    state = States.PARAMETERS
+                                else:
+                                    state = States.END
+
+                            else:
+                                input_ids.append(best_id)
+                                param_tokens.append(clean_best)
 
 
                         case _:

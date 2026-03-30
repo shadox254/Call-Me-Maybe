@@ -13,7 +13,7 @@
 #  File: __init__.py                                                          #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:42:14 by rruiz                                      #
-#  Updated: 2026/03/26 08:07:54 by rruiz                                      #
+#  Updated: 2026/03/30 04:38:57 by rruiz                                      #
 # *************************************************************************** #
 
 from src.parsing.arguments import parse_arguments
