@@ -13,7 +13,7 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/31 12:36:23 by rruiz                                      #
+#  Updated: 2026/03/31 17:41:33 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
@@ -26,6 +26,16 @@ from typing import Any
 
 
 class FunctionModel(BaseModel):  # type: ignore[misc, unused-ignore]
+    """Represents a callable function's schema.
+
+    Defines the expected structure of a function, including its name,
+    description, and the parameters it accepts.
+
+    Attributes:
+        name (str): The identifier of the function.
+        description (str): A brief explanation of what the function does.
+        parameters (dict): The expected arguments and their types.
+    """
     name: str
     description: str
     parameters: dict[str, dict[str, str]]
@@ -33,10 +43,27 @@ class FunctionModel(BaseModel):  # type: ignore[misc, unused-ignore]
 
 
 class PromptModel(BaseModel):  # type: ignore[misc, unused-ignore]
+    """Represents an input prompt for the model.
+
+    Contains the natural language query that needs to be parsed into
+    a specific function call by the LLM.
+
+    Attributes:
+        prompt (str): The raw text input to be processed.
+    """
     prompt: str
 
 
 class States(Enum):
+    """Represents the different states of the parsing state machine.
+
+    Attributes:
+        NAME: Extracting the function name.
+        END_NAME: Transition state after the function name is fully generated.
+        PARAMETERS: Determining the next parameter to extract.
+        PARAMETERS_VALUE: Extracting the value for a specific parameter.
+        END: The parsing process is complete.
+    """
     START = "start"
     NAME = "name"
     END_NAME = "end_name"
@@ -46,15 +73,42 @@ class States(Enum):
 
 
 class CallMeMaybe(Small_LLM_Model):  # type: ignore[misc, unused-ignore]
+    """Core model class for handling function calling tasks.
+
+    Inherits from Small_LLM_Model to process natural language prompts
+    and map them to specific function calls with extracted parameters
+    using a state machine approach.
+
+    Attributes:
+        (List your specific instance attributes here if you initialize any \
+            in __init__)
+    """
     def process(self, functions_list: list[FunctionModel],
                 prompts_list: list[PromptModel], args: Namespace) -> None:
+        """Executes the model on a series of prompts to call functions.
+
+            Processes each prompt by identifying the corresponding function and
+            extracting the expected parameter values using a state machine.
+            Saves the final results to a JSON file.
+
+            Args:
+                functions_list (list[FunctionModel]): The available function \
+                    models.
+                prompts_list (list[PromptModel]): The input prompts.
+                args (Namespace): The arguments containing the output path.
+
+            Raises:
+                TypeError: If a parameter type to process is unknown.
+        """
         state = States.START
         results = []
         function_txt = "Available functions:\n"
         for function in functions_list:
-            params_str = json.dumps(function.parameters)
-            function_txt += f'- {{"name": "{function.name}",\
-"description": "{function.description}", "parameters": {params_str}}}\n'
+            function_txt += f"- {function.name}: {function.description} Parameters: "
+            params_list = []
+            for p_name, p_info in function.parameters.items():
+                params_list.append(f"{p_name} ({p_info['type']})")
+            function_txt += ", ".join(params_list) + "\n"
 
         prefixes = set()
         for function in functions_list:
@@ -289,6 +343,17 @@ class CallMeMaybe(Small_LLM_Model):  # type: ignore[misc, unused-ignore]
                 json.dump(results, f, indent=2)
 
     def load_vocab(self, path: str) -> Any:
+        """Loads a vocabulary dictionary from a file.
+
+        Args:
+            path (str): The path to the vocabulary file.
+
+        Returns:
+            Any: The loaded vocabulary as a dictionary.
+
+        Raises:
+            FileNotFoundError: If the vocabulary file is not found.
+        """
         try:
             with open(path, "r") as f:
                 vocab = json.load(f)
@@ -297,6 +362,14 @@ class CallMeMaybe(Small_LLM_Model):  # type: ignore[misc, unused-ignore]
             raise FileNotFoundError("Error, vocab file not found")
 
     def reverse_vocab(self, vocab: dict[str, int]) -> dict[int, str]:
+        """Reverses the keys and values of a vocabulary dictionary.
+
+        Args:
+            vocab (dict[str, int]): The original vocabulary (token to id).
+
+        Returns:
+            dict[int, str]: The reversed vocabulary (id to token).
+        """
         rev_vocab = {}
         for key, value in vocab.items():
             rev_vocab[value] = key

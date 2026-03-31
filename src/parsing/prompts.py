@@ -13,7 +13,7 @@
 #  File: prompts.py                                                           #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:17:49 by rruiz                                      #
-#  Updated: 2026/03/31 10:27:35 by rruiz                                      #
+#  Updated: 2026/03/31 14:58:40 by rruiz                                      #
 # *************************************************************************** #
 
 from json import load
@@ -21,6 +21,17 @@ from ..model import PromptModel
 
 
 def load_prompts(path: str) -> list[PromptModel]:
+    """Loads the list of prompts to evaluate from a JSON file.
+
+    Args:
+        path (str): The path to the prompts JSON file.
+
+    Returns:
+        list[PromptModel]: A list of objects modeling each prompt.
+
+    Raises:
+        FileNotFoundError: If the specified path does not exist.
+    """
     try:
         with open(path, "r") as f:
             data = load(f)

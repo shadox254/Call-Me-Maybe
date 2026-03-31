@@ -13,13 +13,19 @@
 #  File: arguments.py                                                         #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:05:54 by rruiz                                      #
-#  Updated: 2026/03/30 07:06:22 by rruiz                                      #
+#  Updated: 2026/03/31 14:57:59 by rruiz                                      #
 # *************************************************************************** #
 
 from argparse import Namespace, ArgumentParser
 
 
 def parse_arguments() -> Namespace:
+    """Parses command-line arguments.
+
+    Returns:
+        Namespace: The parsed arguments containing paths for the input file,
+        functions definition, and output file.
+    """
     args = ArgumentParser()
     args.add_argument(
         "--input", "-i",

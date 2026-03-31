@@ -13,7 +13,7 @@
 #  File: functions.py                                                         #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:16:31 by rruiz                                      #
-#  Updated: 2026/03/31 10:46:42 by rruiz                                      #
+#  Updated: 2026/03/31 14:58:30 by rruiz                                      #
 # *************************************************************************** #
 
 from json import load
@@ -21,6 +21,17 @@ from ..model import FunctionModel
 
 
 def load_functions(path: str) -> list[FunctionModel]:
+    """Loads the list of function definitions from a JSON file.
+
+    Args:
+        path (str): The path to the functions JSON file.
+
+    Returns:
+        list[FunctionModel]: A list of objects modeling each function.
+
+    Raises:
+        FileNotFoundError: If the specified path does not exist.
+    """
     try:
         with open(path, "r") as f:
             data = load(f)

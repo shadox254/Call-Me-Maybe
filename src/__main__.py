@@ -13,7 +13,7 @@
 #  File: __main__.py                                                          #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:52:43 by rruiz                                      #
-#  Updated: 2026/03/31 10:36:25 by rruiz                                      #
+#  Updated: 2026/03/31 14:57:44 by rruiz                                      #
 # *************************************************************************** #
 
 import sys
@@ -25,6 +25,19 @@ from json import JSONDecodeError
 
 
 def main() -> None:
+    """Main entry point of the program.
+
+    Handles argument parsing, loads function definitions and prompts,
+    and starts the model processing. Catches and gracefully displays
+    potential errors.
+
+    Raises:
+        FileNotFoundError: If an input file is not found.
+        JSONDecodeError: If a JSON file has invalid syntax.
+        ValueError: If there is a data schema mismatch.
+        KeyboardInterrupt: If execution is manually interrupted (Ctrl+C).
+        Exception: For any other unexpected global error.
+    """
     try:
         args = parse_arguments()
 

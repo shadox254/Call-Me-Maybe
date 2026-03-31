@@ -1,0 +1,9 @@
+[
+  {
+    "prompt": "What is the weakness of water type in pokemon ?",
+    "name": "fn_get_pokemon_type_weakness",
+    "parameters": {
+      "pokemon_type": "string"
+    }
+  }
+]
