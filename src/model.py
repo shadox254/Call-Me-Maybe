@@ -13,7 +13,7 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/31 09:49:45 by rruiz                                      #
+#  Updated: 2026/03/31 10:39:39 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
@@ -25,14 +25,14 @@ from pathlib import Path
 from typing import Any
 
 
-class FunctionModel(BaseModel):
+class FunctionModel(BaseModel):  # type: ignore[misc, unused-ignore]
     name: str
     description: str
     parameters: dict[str, dict[str, str]]
     returns: dict[str, str]
 
 
-class PromptModel(BaseModel):
+class PromptModel(BaseModel):  # type: ignore[misc, unused-ignore]
     prompt: str
 
 
@@ -45,7 +45,7 @@ class States(Enum):
     END = "end"
 
 
-class CallMeMaybe(Small_LLM_Model):
+class CallMeMaybe(Small_LLM_Model):  # type: ignore[misc, unused-ignore]
     def process(self, functions_list: list[FunctionModel],
                 prompts_list: list[PromptModel], args: Namespace) -> None:
         state = States.START
@@ -296,7 +296,7 @@ class CallMeMaybe(Small_LLM_Model):
         except FileNotFoundError:
             raise FileNotFoundError("Error, vocab file not found")
 
-    def reverse_vocab(self, vocab: dict) -> dict[int, str]:
+    def reverse_vocab(self, vocab: dict[str, int]) -> dict[int, str]:
         rev_vocab = {}
         for key, value in vocab.items():
             rev_vocab[value] = key

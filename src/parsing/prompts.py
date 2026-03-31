@@ -13,14 +13,14 @@
 #  File: prompts.py                                                           #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:17:49 by rruiz                                      #
-#  Updated: 2026/03/30 07:06:41 by rruiz                                      #
+#  Updated: 2026/03/31 10:27:35 by rruiz                                      #
 # *************************************************************************** #
 
 from json import load
 from ..model import PromptModel
 
 
-def load_prompts(path: str) -> list:
+def load_prompts(path: str) -> list[PromptModel]:
     try:
         with open(path, "r") as f:
             data = load(f)

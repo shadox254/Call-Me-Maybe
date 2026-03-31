@@ -13,14 +13,14 @@
 #  File: functions.py                                                         #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:16:31 by rruiz                                      #
-#  Updated: 2026/03/30 07:06:34 by rruiz                                      #
+#  Updated: 2026/03/31 10:34:44 by rruiz                                      #
 # *************************************************************************** #
 
 from json import load
+from ..model import FunctionModel
 
 
-def load_functions(path: str) -> list:
-    from src import FunctionModel
+def load_functions(path: str) -> list[FunctionModel]:
     try:
         with open(path, "r") as f:
             data = load(f)

@@ -13,7 +13,7 @@
 #  File: __main__.py                                                          #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:52:43 by rruiz                                      #
-#  Updated: 2026/03/31 09:43:49 by rruiz                                      #
+#  Updated: 2026/03/31 10:36:25 by rruiz                                      #
 # *************************************************************************** #
 
 import sys
@@ -62,11 +62,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    # sys.exit(main())
-    from time import sleep
-    llm = CallMeMaybe()
-    test = llm.get_path_to_vocab_file()
-    oui = llm.load_vocab(test)
-    print(type(oui))
-    sleep(5)
-    print(oui)
+    main()
