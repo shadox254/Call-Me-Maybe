@@ -13,14 +13,13 @@
 #  File: Makefile                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 08:55:56 by rruiz                                      #
-#  Updated: 2026/03/31 10:43:12 by rruiz                                      #
+#  Updated: 2026/03/31 13:46:33 by rruiz                                      #
 # *************************************************************************** #
 
 MYPY_FLAGS	= --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs --follow-imports=skip
 SRC			= src
 
 install:
-	@echo "Beautiful message"
 	uv sync
 
 run:
@@ -29,7 +28,6 @@ run:
 debug:
 	@clear
 	@uv run -m pdb -m src
-	@echo "debug not available"
 
 clean:
 	rm -rf .mypy_cache
@@ -42,6 +40,3 @@ lint:
 lint-strict:
 	@-uv run flake8 ${SRC}
 	@-uv run mypy ${SRC} $(MYPY_FLAGS) --strict
-
-sync:
-	uv sync

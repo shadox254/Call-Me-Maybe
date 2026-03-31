@@ -13,11 +13,11 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/31 10:39:39 by rruiz                                      #
+#  Updated: 2026/03/31 12:36:23 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
-from llm_sdk.llm_sdk import Small_LLM_Model
+from llm_sdk import Small_LLM_Model
 import json
 from enum import Enum
 from argparse import Namespace
