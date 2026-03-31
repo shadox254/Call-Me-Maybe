@@ -13,7 +13,7 @@
 #  File: Makefile                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 08:55:56 by rruiz                                      #
-#  Updated: 2026/03/31 10:13:54 by rruiz                                      #
+#  Updated: 2026/03/31 10:43:12 by rruiz                                      #
 # *************************************************************************** #
 
 MYPY_FLAGS	= --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs --follow-imports=skip
@@ -27,6 +27,8 @@ run:
 	uv run python -m src
 
 debug:
+	@clear
+	@uv run -m pdb -m src
 	@echo "debug not available"
 
 clean:

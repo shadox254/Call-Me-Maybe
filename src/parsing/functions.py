@@ -13,7 +13,7 @@
 #  File: functions.py                                                         #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:16:31 by rruiz                                      #
-#  Updated: 2026/03/31 10:34:44 by rruiz                                      #
+#  Updated: 2026/03/31 10:46:42 by rruiz                                      #
 # *************************************************************************** #
 
 from json import load
@@ -24,7 +24,6 @@ def load_functions(path: str) -> list[FunctionModel]:
     try:
         with open(path, "r") as f:
             data = load(f)
-            # for arg in data:
             funcs_list = [FunctionModel(**arg) for arg in data]
         return funcs_list
     except FileNotFoundError:
