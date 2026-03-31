@@ -13,7 +13,7 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/30 07:23:23 by rruiz                                      #
+#  Updated: 2026/03/31 09:49:45 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
@@ -22,6 +22,7 @@ import json
 from enum import Enum
 from argparse import Namespace
 from pathlib import Path
+from typing import Any
 
 
 class FunctionModel(BaseModel):
@@ -74,7 +75,7 @@ class CallMeMaybe(Small_LLM_Model):
 
             function_name = ""
             state = States.NAME
-            saved_params = {}
+            saved_params: dict[str, float | str | int] = {}
             while (state != States.END):
                 logits = self.get_logits_from_input_ids(input_ids)
                 if state == States.NAME:
@@ -125,7 +126,7 @@ class CallMeMaybe(Small_LLM_Model):
                         for a in self.encode(f'"{key}": '):
                             for b in a:
                                 input_ids.append(b)
-                        param_tokens = []
+                        param_tokens: list[str] = []
                         state = States.PARAMETERS_VALUE
 
                 elif state == States.PARAMETERS_VALUE:
@@ -287,7 +288,7 @@ class CallMeMaybe(Small_LLM_Model):
             with open(args.output, "w") as f:
                 json.dump(results, f, indent=2)
 
-    def load_vocab(self, path: str):
+    def load_vocab(self, path: str) -> Any:
         try:
             with open(path, "r") as f:
                 vocab = json.load(f)
@@ -295,7 +296,7 @@ class CallMeMaybe(Small_LLM_Model):
         except FileNotFoundError:
             raise FileNotFoundError("Error, vocab file not found")
 
-    def reverse_vocab(self, vocab: dict):
+    def reverse_vocab(self, vocab: dict) -> dict[int, str]:
         rev_vocab = {}
         for key, value in vocab.items():
             rev_vocab[value] = key
