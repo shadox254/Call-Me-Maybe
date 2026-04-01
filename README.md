@@ -176,3 +176,5 @@ docu:
 	https://www.datacamp.com/fr/tutorial/python-argparse
 	https://www.aidancooper.co.uk/constrained-decoding/#motivating-example
 	https://www.datacamp.com/tutorial/python-uv
+
+AI helped me understand how to create a state machine, find solutions to the problems I encountered, understand how LLMs work, and fix my README
