@@ -13,7 +13,7 @@
 #  File: prompts.py                                                           #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:17:49 by rruiz                                      #
-#  Updated: 2026/03/31 14:58:40 by rruiz                                      #
+#  Updated: 2026/04/01 10:07:19 by rruiz                                      #
 # *************************************************************************** #
 
 from json import load
@@ -38,4 +38,4 @@ def load_prompts(path: str) -> list[PromptModel]:
             prompts_list = [PromptModel(**arg) for arg in data]
         return prompts_list
     except FileNotFoundError:
-        raise FileNotFoundError(f"File not found: {path}")
+        raise FileNotFoundError(f"file not found: {path}")

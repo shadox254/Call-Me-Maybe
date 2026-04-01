@@ -13,7 +13,7 @@
 #  File: __main__.py                                                          #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:52:43 by rruiz                                      #
-#  Updated: 2026/04/01 09:39:34 by rruiz                                      #
+#  Updated: 2026/04/01 10:07:31 by rruiz                                      #
 # *************************************************************************** #
 
 import sys
@@ -56,8 +56,7 @@ def main() -> None:
         test.process(functions_list, prompts_list, args)
 
     except FileNotFoundError as e:
-        print(f"Error: The file '{e.filename}' was not found.",
-              file=sys.stderr)
+        print(f"Error, {e}", file=sys.stderr)
         sys.exit(1)
     except JSONDecodeError as e:
         print(f"Error: Invalid JSON syntax at line {e.lineno}.",

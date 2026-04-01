@@ -13,7 +13,7 @@
 #  File: functions.py                                                         #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/25 10:16:31 by rruiz                                      #
-#  Updated: 2026/03/31 14:58:30 by rruiz                                      #
+#  Updated: 2026/04/01 10:07:17 by rruiz                                      #
 # *************************************************************************** #
 
 from json import load
@@ -38,4 +38,4 @@ def load_functions(path: str) -> list[FunctionModel]:
             funcs_list = [FunctionModel(**arg) for arg in data]
         return funcs_list
     except FileNotFoundError:
-        raise FileNotFoundError(f"File not found: {path}")
+        raise FileNotFoundError(f"file not found: {path}")
