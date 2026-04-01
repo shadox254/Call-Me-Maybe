@@ -128,7 +128,7 @@ Several major choices guided the project's architecture:
 ## 🎯 Challenges faced
 The most difficult challenges for me are understanding how to implement constrained decoding and finding arguments in the prompt. I solved the first one by creating a sentence using the function and the prompt before processing them. For the second one, I broke the problem down to find the most logical approach and I give to him a exemple of waht i want.
 
-## Testing strategy
+## 🧪 Testing strategy
 I tested every error I could think of and handled them.
 
 ## ⚙️ Example usage
