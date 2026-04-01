@@ -174,12 +174,10 @@ The model produces this result every time:
 
 ## 📂 Ressources
 ### 🛠️ Technical ressources
-argaparse documentation: https://www.datacamp.com/fr/tutorial/python-argparse
-contrained decoding: https://www.aidancooper.co.uk/constrained-decoding/#motivating-example
-uv documentation: https://www.datacamp.com/tutorial/python-uv
-github CallMeMaybe: https://github.com/69Nesta/42-Call-Me-Maybe
-					https://github.com/canarddu38/call-me-maybe
-					https://github.com/sousampere/42_call_me_maybe_v1.2
+- argaparse documentation: https://www.datacamp.com/fr/tutorial/python-argparse
+- contrained decoding: https://www.aidancooper.co.uk/constrained-decoding/#motivating-example
+- uv documentation: https://www.datacamp.com/tutorial/python-uv
+- github CallMeMaybe: [69Nesta](https://github.com/69Nesta/42-Call-Me-Maybe), [canarddu38](https://github.com/canarddu38/call-me-maybe), [sousampere](https://github.com/sousampere/42_call_me_maybe_v1.2)
 
 ### 👾 AI usage
 AI helped me understand how to create a state machine, find solutions to the problems I encountered, understand how LLMs work, and fix my README
