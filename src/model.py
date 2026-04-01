@@ -13,7 +13,7 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/03/31 17:53:34 by rruiz                                      #
+#  Updated: 2026/04/01 09:16:12 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
@@ -102,10 +102,11 @@ class CallMeMaybe(Small_LLM_Model):  # type: ignore[misc, unused-ignore]
         """
         state = States.START
         results = []
-        
+
         function_txt = "Available functions:\n"
         for function in functions_list:
-            function_txt += f"- {function.name}: {function.description} Parameters: "
+            function_txt += f"- {function.name}: {function.description} \
+Parameters: "
             params_list = []
             for p_name, p_info in function.parameters.items():
                 params_list.append(f"{p_name}")
@@ -120,10 +121,12 @@ class CallMeMaybe(Small_LLM_Model):  # type: ignore[misc, unused-ignore]
         vocab = self.load_vocab(vocab_path)
         rev_vocab = self.reverse_vocab(vocab)
 
-        few_shot = '\nTask:\n{\n  "prompt": "What is the capital of France?",\n  "name": "fn_get_capital", "parameters": {"country": "France"}\n}'
+        few_shot = '\nTask:\n{\n  "prompt": "What is the capital of France?",\
+\n  "name": "fn_get_capital", "parameters": {"country": "France"}\n}'
 
         for prompt in prompts_list:
-            to_write = function_txt + few_shot + f'\nTask:\n{{\n  "prompt": "{prompt.prompt}",\n  "name": "'
+            to_write = function_txt + few_shot + f'\nTask:\n{{\n  "prompt": \
+"{prompt.prompt}",\n  "name": "'
             input_ids = []
             for a in self.encode(to_write):
                 for b in a:
