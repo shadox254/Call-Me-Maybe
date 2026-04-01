@@ -7,8 +7,9 @@ The output must be a 100% valid JSON file. Since LLMs do not always generate val
 
 We have one file containing prompts and another containing function definitions (name, description, arguments, and return value):
 
+ ### 🔣 Input example :
 ```json
-# JSON prompt file example :
+# JSON prompt file example:
 [
 	{
     	"prompt": "What is the sum of 2 and 3?"
@@ -24,7 +25,7 @@ We have one file containing prompts and another containing function definitions 
 
 
 ```json
-# JSON function description file example :
+# JSON function description file example:
 [
 	{
     	"prompt": "What is the sum of 2 and 3?"
@@ -38,7 +39,7 @@ We have one file containing prompts and another containing function definitions 
 ]
 ```
 
- ### Output example :
+ ### 🚪 Output example :
 ```json
 [
   {
@@ -65,12 +66,12 @@ We have one file containing prompts and another containing function definitions 
 ]
 ```
 
-## Prerequisites
+## 📋 Prerequisites
 - Python (3.10+)
 - uv
 - +2G of storage to download the LLM
 
-## Instructions
+## 📜 Instructions
 **Using the Makefile**
 ```bash
 mask install  # install all dependencied using uv
@@ -90,14 +91,14 @@ uv run python -m src
 [--output <output_file>]  # Run with custom arguments/paths
 ```
 
-### Arguments
+### 🗣️ Arguments
 | Flag | Description |
 | ---- | ----------- |
 | --functions_definition | path to functions definition |
 | --input | path to Json file with prompt |
 | --output | path to output json file |
 
-## Algorithm explanation
+## 🤖 Algorithm explanation
 The algorithm relies on a constrained decoding technique driven by a state machine. Instead of letting the small language model generate text freely, the program strictly controls the output structure to ensure a valid JSON format.
 
 The process works as follows:
@@ -108,7 +109,7 @@ The process works as follows:
 
 - Forced Prediction: The model then chooses the most probable token among the remaining allowed ones. For example, if it is in the state of generating a number, only digits, dots, and minus signs are permitted.
 
-## Design decisions
+## 🎨 Design decisions
 Several major choices guided the project's architecture:
 
 - Strict Generation via State Machine: Rather than asking the model to attempt JSON generation and hoping for the best, the writing of braces, quotes, and commas is strictly enforced by the script. This completely eliminates parsing errors caused by malformed JSON.
@@ -117,22 +118,22 @@ Several major choices guided the project's architecture:
 
 - Few-Shot Prompting: Small models sometimes lack broad context or specific vocabulary. Injecting a concrete resolution example directly into the context (prompt) helps the model understand the expected extraction logic, even when dealing with unfamiliar subjects.
 
-## Performance analysis
+## 📈 Performance analysis
 - Accuracy: Structural reliability is 100% due to logit masking. On the semantic side (finding the right function and arguments), the results are excellent for standard queries. For out-of-distribution data (complex or unknown vocabulary), accuracy heavily depends on the quality of the examples provided in the pre-prompt.
 
 - Speed: The method introduces some computational overhead. Forcing the model to generate the entire JSON structure token by token is slower than having it extract only the relevant values. Furthermore, adding the full context (functions and examples) increases the input size for each loop iteration, which impacts the overall execution time across a large test suite.
 
 - Reliability: The system is highly robust against format hallucinations. Its main drawback is its rigidity: tokenization handling (such as an unexpected space at the beginning of a token or complex escape characters) must be exhaustively accounted for in the state machine, otherwise the generation process will crash.
 
-## Challenges faced
+## 🎯 Challenges faced
 The most difficult challenges for me are understanding how to implement constrained decoding and finding arguments in the prompt. I solved the first one by creating a sentence using the function and the prompt before processing them. For the second one, I broke the problem down to find the most logical approach and I give to him a exemple of waht i want.
 
-## Testing strategy
+## 🧪 Testing strategy
 I tested every error I could think of and handled them.
 
-## Example usage
-In prompt file :
+## ⚙️ Example usage
 ```json
+# Prompt file:
 [
 	{
 		"prompt": "What is the weakness of water type in pokemon ?"
@@ -140,8 +141,8 @@ In prompt file :
 ]
 ```
 
-In functions definition file :
 ```json
+# Functions definition file:
 [
 	{
 	"name": "fn_get_pokemon_type_weakness",
@@ -171,8 +172,12 @@ The model produces this result every time:
 ]
 ```
 
-## Ressources
-docu:
-	https://www.datacamp.com/fr/tutorial/python-argparse
-	https://www.aidancooper.co.uk/constrained-decoding/#motivating-example
-	https://www.datacamp.com/tutorial/python-uv
+## 📂 Ressources
+### 🛠️ Technical ressources
+- argaparse documentation: https://www.datacamp.com/fr/tutorial/python-argparse
+- contrained decoding: https://www.aidancooper.co.uk/constrained-decoding/#motivating-example
+- uv documentation: https://www.datacamp.com/tutorial/python-uv
+- github CallMeMaybe: [69Nesta](https://github.com/69Nesta/42-Call-Me-Maybe), [canarddu38](https://github.com/canarddu38/call-me-maybe), [sousampere](https://github.com/sousampere/42_call_me_maybe_v1.2)
+
+### 👾 AI usage
+AI helped me understand how to create a state machine, find solutions to the problems I encountered, understand how LLMs work, and fix my README
