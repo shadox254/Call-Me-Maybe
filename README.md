@@ -9,7 +9,7 @@ We have one file containing prompts and another containing function definitions 
 
  ### 🔣 Input example :
 ```json
-# JSON prompt file example :
+# JSON prompt file example:
 [
 	{
     	"prompt": "What is the sum of 2 and 3?"
@@ -25,7 +25,7 @@ We have one file containing prompts and another containing function definitions 
 
 
 ```json
-# JSON function description file example :
+# JSON function description file example:
 [
 	{
     	"prompt": "What is the sum of 2 and 3?"
