@@ -13,7 +13,7 @@
 #  File: Makefile                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 08:55:56 by rruiz                                      #
-#  Updated: 2026/03/31 13:46:33 by rruiz                                      #
+#  Updated: 2026/04/01 09:42:17 by rruiz                                      #
 # *************************************************************************** #
 
 MYPY_FLAGS	= --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs --follow-imports=skip
@@ -26,12 +26,14 @@ run:
 	uv run python -m src
 
 debug:
-	@clear
 	@uv run -m pdb -m src
 
 clean:
-	rm -rf .mypy_cache
-	find . -type d -name "__pycache__" -exec rm -rf {} +
+	@rm -rf .mypy_cache
+	@find . -type d -name "__pycache__" -exec rm -rf {} +
+
+fclean: clean
+	rm -rf .venv
 
 lint:
 	@-uv run flake8 ${SRC}
