@@ -13,7 +13,7 @@
 #  File: model.py                                                             #
 #  By: rruiz <rruiz@student.42.fr>                                            #
 #  Created: 2026/03/23 16:57:41 by rruiz                                      #
-#  Updated: 2026/04/01 09:16:12 by rruiz                                      #
+#  Updated: 2026/04/01 09:30:30 by rruiz                                      #
 # *************************************************************************** #
 
 from pydantic import BaseModel
@@ -145,9 +145,8 @@ Parameters: "
                             is_valid = True
 
                         else:
-                            if ((function_name
-                                 + token) == (function.name
-                                              for function in functions_list)):
+                            if any((function_name + token) == function.name
+                                   for function in functions_list):
                                 is_valid = True
                                 break
 
