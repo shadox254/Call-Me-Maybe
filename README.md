@@ -132,8 +132,8 @@ The most difficult challenges for me are understanding how to implement constrai
 I tested every error I could think of and handled them.
 
 ## ⚙️ Example usage
-In prompt file :
 ```json
+# Prompt file:
 [
 	{
 		"prompt": "What is the weakness of water type in pokemon ?"
@@ -141,8 +141,8 @@ In prompt file :
 ]
 ```
 
-In functions definition file :
 ```json
+# Functions definition file:
 [
 	{
 	"name": "fn_get_pokemon_type_weakness",
